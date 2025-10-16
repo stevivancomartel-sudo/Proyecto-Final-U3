@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 
 const Team = () => {
   const [team, setTeam] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Datos del equipo
   const teamInfo = [
     {
       id: 1,
@@ -94,12 +92,7 @@ const Team = () => {
   return (
     <div className="bg-pink-50 min-h-screen">
       {/* Header */}
-      <motion.section
-        initial={{ opacity: 0, y: -40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="bg-gradient-to-r from-pink-300 to-rose-200 text-white py-20 text-center shadow-md"
-      >
+      <section className="bg-gradient-to-r from-pink-300 to-rose-200 text-white py-20 text-center shadow-md">
         <h1 className="text-4xl lg:text-5xl font-bold mb-4 drop-shadow-sm">
           Conoce a nuestro equipo
         </h1>
@@ -107,7 +100,7 @@ const Team = () => {
           Somos un grupo de chicas apasionadas por la tecnología y el diseño,
           creando proyectos llenos de color y propósito 💖
         </p>
-      </motion.section>
+      </section>
 
       {/* Team Members */}
       <section className="py-16 px-6 max-w-6xl mx-auto">
@@ -115,40 +108,20 @@ const Team = () => {
           🌷 Nuestro Equipo
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {team.map((member, index) => (
-            <motion.div
-              key={member.id}
-              initial={{ opacity: 0, scale: 0.8, y: 50 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-            >
-              <TeamMemberCard member={member} />
-            </motion.div>
+          {team.map((member) => (
+            <TeamMemberCard key={member.id} member={member} />
           ))}
         </div>
       </section>
 
       {/* Testimonials */}
       <section className="py-16 bg-white px-6">
-        <motion.h2
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="text-3xl font-bold text-pink-600 mb-10 text-center"
-        >
+        <h2 className="text-3xl font-bold text-pink-600 mb-10 text-center">
           💕 Lo que dicen de nosotras
-        </motion.h2>
+        </h2>
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-          {testimonials.map((t, index) => (
-            <motion.div
-              key={t.id}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.3 }}
-              whileHover={{ scale: 1.05 }}
-            >
-              <TestimonialCard testimonial={t} />
-            </motion.div>
+          {testimonials.map((t) => (
+            <TestimonialCard key={t.id} testimonial={t} />
           ))}
         </div>
       </section>
@@ -158,11 +131,7 @@ const Team = () => {
 
 // 🌸 Tarjeta del equipo
 const TeamMemberCard = ({ member }) => (
-  <motion.div
-    whileHover={{ scale: 1.05, rotate: 1 }}
-    transition={{ type: "spring", stiffness: 200 }}
-    className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all p-6 border border-pink-100 text-center"
-  >
+  <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all p-6 border border-pink-100 text-center">
     <div className="text-5xl mb-4">👩‍💻</div>
     <h3 className="text-xl font-semibold text-pink-600">{member.name}</h3>
     <p className="text-gray-600 font-medium mb-3">{member.role}</p>
@@ -199,19 +168,13 @@ const TeamMemberCard = ({ member }) => (
         </a>
       ))}
     </div>
-  </motion.div>
+  </div>
 );
 
 // 💬 Tarjeta de testimonio
 const TestimonialCard = ({ testimonial }) => (
-  <motion.div
-    whileHover={{ scale: 1.03 }}
-    transition={{ duration: 0.3 }}
-    className="bg-pink-50 border border-pink-100 rounded-2xl shadow-sm p-6"
-  >
-    <p className="text-gray-700 italic mb-4">
-      “{testimonial.content}”
-    </p>
+  <div className="bg-pink-50 border border-pink-100 rounded-2xl shadow-sm p-6">
+    <p className="text-gray-700 italic mb-4">“{testimonial.content}”</p>
     <div className="text-right">
       <h4 className="font-semibold text-pink-600">{testimonial.name}</h4>
       <p className="text-sm text-gray-600">{testimonial.role}</p>
@@ -220,7 +183,7 @@ const TestimonialCard = ({ testimonial }) => (
         {"⭐".repeat(testimonial.rating)}
       </div>
     </div>
-  </motion.div>
+  </div>
 );
 
 // Iconos de redes
@@ -235,3 +198,5 @@ const getSocialIcon = (platform) => {
 };
 
 export default Team;
+
+
