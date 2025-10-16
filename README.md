@@ -1,16 +1,72 @@
-# React + Vite
+# 🐾 Kitty Code
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Kitty Code** es un proyecto creado por un equipo de chicas apasionadas por la tecnología y el diseño: **Besnaliz, Tatiana y Stefany**.  
+Nos especializamos en **desarrollar soluciones web, aplicaciones y diseños digitales** con creatividad y propósito.  
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Descripción del Proyecto
 
-## React Compiler
+Kitty Code nace para ofrecer **proyectos tecnológicos con impacto real**, combinando:  
+- Creatividad 🎨  
+- Usabilidad 🖥️  
+- Tecnología de punta ⚡  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Nuestro enfoque es crear soluciones **personalizadas, accesibles y escalables** para clientes que buscan innovación y excelencia.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 💻 Tecnologías Utilizadas
+
+**Frontend:** React, TailwindCSS, HTML, CSS, JavaScript  
+**Backend:** Node.js, Express, PostgreSQL  
+**Diseño:** Figma, Adobe XD, Illustrator  
+**Herramientas:** GitHub, Vercel/Netlify, APIs REST  
+
+---
+
+## 🚀 Características Principales
+
+- Portafolio interactivo de proyectos realizados  
+- Sección de habilidades con indicadores de dominio  
+- Contacto dinámico con validación de formulario  
+- Tarjetas del equipo con información y redes sociales  
+- Animaciones y efectos visuales que mejoran la experiencia  
+
+---
+
+## 🌟 Impacto de Nuestros Proyectos
+
+| Métrica | Resultado |
+|---------|-----------|
+| 🏆 Proyectos Completados | 12+ |
+| 👥 Usuarios Impactados | 500+ |
+| 😊 Satisfacción del Cliente | 98% |
+| 💻 Líneas de Código | 15K+ |
+
+---
+
+## 👩‍💻 Nuestro Equipo
+
+- **Besnaliz Faria** – Frontend Developer – Interfaces dinámicas y responsivas  
+- **Tatiana Gonzales** – Backend Developer – Sistemas seguros y escalables  
+- **Stefany Vivanco** – UI/UX Designer – Experiencias digitales intuitivas  
+
+---
+
+## 📬 Contacto
+
+- ✉️ hola@kittycode.dev  
+- 💖 proyectos@kittycode.dev  
+- 🐾 contacto@kittycode.dev  
+
+**Síguenos en redes sociales:**  
+Instagram, TikTok, YouTube, GitHub, LinkedIn  
+
+---
+
+## ⚡ Cómo Ejecutar el Proyecto
+
+1. Clonar el repositorio:  
+```bash
+git clone https://github.com/tu-usuario/kitty-code.git
