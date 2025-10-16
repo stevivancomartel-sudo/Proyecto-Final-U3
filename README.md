@@ -62,11 +62,3 @@ Nuestro enfoque es crear soluciones **personalizadas, accesibles y escalables** 
 
 **Síguenos en redes sociales:**  
 Instagram, TikTok, YouTube, GitHub, LinkedIn  
-
----
-
-## ⚡ Cómo Ejecutar el Proyecto
-
-1. Clonar el repositorio:  
-```bash
-git clone https://github.com/tu-usuario/kitty-code.git
