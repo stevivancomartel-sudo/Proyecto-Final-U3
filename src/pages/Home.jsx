@@ -16,6 +16,8 @@ const Home = () => {
     loadStats();
   }, []);
 
+      { /* Pantalla de carga */ }
+      { /* Mientras isLoading está en true, se muestra una pequeña animación con un círculo que gira y un mensaje que dice “Cargando…”. */}
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-pink-50">
@@ -45,6 +47,8 @@ const Home = () => {
                 programadoras apasionadas por crear soluciones tecnológicas con
                 estilo y corazón.
               </p>
+
+              {/* Hay dos botones con Link */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/portfolio"
@@ -133,7 +137,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Llamado a la acción */}
       <section className="py-16 bg-white text-center">
         <h2 className="text-3xl lg:text-4xl font-bold text-pink-700 mb-6">
           ¿Lista para crear algo increíble?
@@ -141,6 +145,7 @@ const Home = () => {
         <p className="text-lg text-pink-500 mb-8">
           Cuéntanos tu idea y hagamos realidad tu proyecto 💕
         </p>
+        {/* Hay dos botones con Link */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             to="/contacto"
@@ -176,5 +181,3 @@ const ValueCard = ({ emoji, title, text }) => (
 );
 
 export default Home;
-
-

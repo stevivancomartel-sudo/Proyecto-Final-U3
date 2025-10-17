@@ -9,7 +9,7 @@ import "./index.css";
 
 function App() {
   return (
-    <Router>
+    <Router basename="/Proyecto-Final-U3">
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -25,6 +25,8 @@ function App() {
 }
 
 export default App;
+
+
 
 
 
