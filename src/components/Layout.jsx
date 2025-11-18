@@ -11,6 +11,8 @@ const Layout = ({ children }) => {
     { name: "Portafolio", href: "/portfolio" },
     { name: "Habilidades", href: "/habilidades" },
     { name: "Contacto", href: "/contacto" },
+    // 🌸 Agregado aquí:
+    { name: "Dashboard", href: "/dashboard" },
   ];
 
   const isActive = (path) => location.pathname === path;
