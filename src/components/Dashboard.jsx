@@ -1,179 +1,143 @@
 // src/components/Dashboard.jsx
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import React, { useState } from "react";
+import { logout } from "../services/auth";
 import { useAuth } from "../contexts/AuthContext";
 
+import UserProfile from "./UserProfile";
+import TeamMemberManager from "./TeamMemberManager";
+import ProjectsManager from "./ProjectsManager";
+import SkillsManager from "./SkillsManager";
+
 const Dashboard = () => {
-  const { user, userRole, isAdmin } = useAuth();
+  const { user, userRole, isAdmin, isTeam } = useAuth();
+  const [activeTab, setActiveTab] = useState("profile");
+  const [loading, setLoading] = useState(false);
 
-  const [counts, setCounts] = useState({
-    cursos: 0,
-    estudiantes: 0,
-    comentarios: 0,
-  });
+  const tabs = [
+    { id: "profile", name: "Mi Perfil", icon: "🐱", access: "all" },
+    { id: "team", name: "Equipo", icon: "👥", access: "team" },
+    { id: "projects", name: "Proyectos", icon: "🗂️", access: "team" },
+    { id: "skills", name: "Habilidades", icon: "⭐", access: "team" },
+  ];
 
-  const [loading, setLoading] = useState(true);
-
-  // Animación de tarjetas
-  const cardVariant = {
-    hidden: { opacity: 0, y: 8 },
-    show: (i = 1) => ({
-      opacity: 1,
-      y: 0,
-      transition: { delay: 0.08 * i },
-    }),
+  const hasAccess = (access) => {
+    if (access === "all") return true;
+    if (access === "team") return isTeam || isAdmin;
+    if (access === "admin") return isAdmin;
+    return false;
   };
 
-  // Obtener datos de Firebase
-  useEffect(() => {
-    async function fetchCounts() {
-      try {
-        const cursosSnap = await getDocs(collection(db, "cursos"));
-        const usuariosSnap = await getDocs(collection(db, "usuarios"));
-        const comentariosSnap = await getDocs(collection(db, "comentarios"));
-
-        setCounts({
-          cursos: cursosSnap.size,
-          estudiantes: usuariosSnap.size,
-          comentarios: comentariosSnap.size,
-        });
-      } catch (err) {
-        console.error("Error al cargar datos:", err);
-      } finally {
-        setLoading(false);
-      }
+  const handleLogout = async () => {
+    setLoading(true);
+    try {
+      await logout();
+      window.location.href = "/"; // redirección segura
+    } catch (e) {
+      console.error("Error al cerrar sesión:", e);
     }
+    setLoading(false);
+  };
 
-    fetchCounts();
-  }, []);
+  const getRoleLabel = (role) => {
+    if (role === "admin") return "Administradora ✨";
+    if (role === "team") return "Miembro del Equipo 💖";
+    return "Usuario";
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "profile":
+        return <UserProfile />;
+      case "team":
+        return <TeamMemberManager />;
+      case "projects":
+        return <ProjectsManager />;
+      case "skills":
+        return <SkillsManager />;
+      default:
+        return <UserProfile />;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ENCABEZADO ESTILO CÓDIGO ROSA */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            {/* LOGO */}
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full flex items-center justify-center mr-3 shadow">
-                <span className="text-white text-2xl">🐾</span>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-100">
 
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Kitty Code Panel</h1>
-                <p className="text-sm text-gray-500">
-                  Administración del sistema educativo
-                </p>
-              </div>
+      {/* HEADER */}
+      <header className="bg-gradient-to-r from-pink-300 to-pink-500 shadow-lg py-4">
+        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center text-2xl shadow-inner">
+              🐾
             </div>
 
-            {/* DATOS DEL USUARIO */}
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">
-                  {user?.displayName || user?.email}
-                </p>
-                <p className="text-xs text-gray-500">{userRole}</p>
-              </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">Kitty Code Dashboard</h1>
+              <p className="text-pink-100 text-sm">Gestión del equipo y contenido</p>
             </div>
           </div>
+
+          <button
+            onClick={handleLogout}
+            disabled={loading}
+            className="bg-white/90 text-pink-700 px-4 py-2 rounded-xl font-semibold border border-pink-200 hover:bg-white shadow transition disabled:opacity-50"
+          >
+            {loading ? "Cerrando..." : "Cerrar Sesión"}
+          </button>
         </div>
-      </div>
+      </header>
 
-      {/* CONTENIDO PRINCIPAL */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-        {/* Tarjetas de estadísticas */}
-        <motion.section
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 sm:grid-cols-3 gap-6"
-        >
-          <motion.div
-            variants={cardVariant}
-            custom={1}
-            className="bg-white rounded-2xl p-6 shadow border border-pink-100"
-          >
-            <p className="text-sm text-pink-500 font-semibold">Cursos</p>
-            <p className="text-3xl font-extrabold mt-3">
-              {loading ? "..." : counts.cursos}
-            </p>
-            <p className="text-xs text-gray-500 mt-2">Cursos publicados</p>
-          </motion.div>
+      {/* MAIN CONTENT */}
+      <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-4 gap-10">
 
-          <motion.div
-            variants={cardVariant}
-            custom={2}
-            className="bg-white rounded-2xl p-6 shadow border border-pink-100"
-          >
-            <p className="text-sm text-pink-500 font-semibold">Estudiantes</p>
-            <p className="text-3xl font-extrabold mt-3">
-              {loading ? "..." : counts.estudiantes}
-            </p>
-            <p className="text-xs text-gray-500 mt-2">Usuarios registrados</p>
-          </motion.div>
+        {/* SIDEBAR */}
+        <aside className="bg-white/70 backdrop-blur-lg p-6 rounded-2xl shadow-lg border border-pink-200 h-fit">
 
-          <motion.div
-            variants={cardVariant}
-            custom={3}
-            className="bg-white rounded-2xl p-6 shadow border border-pink-100"
-          >
-            <p className="text-sm text-pink-500 font-semibold">Comentarios</p>
-            <p className="text-3xl font-extrabold mt-3">
-              {loading ? "..." : counts.comentarios}
-            </p>
-            <p className="text-xs text-gray-500 mt-2">Interacciones recientes</p>
-          </motion.div>
-        </motion.section>
+          <h2 className="text-lg font-semibold text-pink-700 mb-4">Navegación</h2>
 
-        {/* Actividad y Acciones */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Actividad */}
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="lg:col-span-2 bg-white rounded-2xl p-6 shadow border border-pink-100"
-          >
-            <h3 className="text-lg font-bold text-pink-700 mb-3">
-              Actividad reciente
-            </h3>
-            <ul className="space-y-3 text-gray-700 text-sm">
-              <li>🎓 Nuevos estudiantes se registraron en Kitty Code.</li>
-              <li>💬 Comentarios añadidos en tus cursos.</li>
-              <li>📚 Se actualizó contenido en la plataforma.</li>
-            </ul>
-          </motion.div>
-
-          {/* Acciones */}
-          <motion.aside
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl p-6 shadow border border-pink-100"
-          >
-            <h4 className="text-md font-bold text-pink-700 mb-3">Acciones</h4>
-
-            {isAdmin ? (
-              <button className="w-full py-2 rounded-md bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold mb-3">
-                🛠 Panel administrativo
-              </button>
-            ) : (
-              <p className="text-sm text-gray-500 mb-3">
-                Acceso limitado — rol de equipo
-              </p>
+          <ul className="space-y-2">
+            {tabs.map(
+              (tab) =>
+                hasAccess(tab.access) && (
+                  <li key={tab.id}>
+                    <button
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-medium transition ${
+                        activeTab === tab.id
+                          ? "bg-pink-200 text-pink-800 shadow-inner border-l-4 border-pink-500"
+                          : "text-pink-600 hover:bg-pink-100"
+                      }`}
+                    >
+                      <span className="text-lg">{tab.icon}</span>
+                      {tab.name}
+                    </button>
+                  </li>
+                )
             )}
+          </ul>
 
-            <a
-              href="/"
-              className="block text-center py-2 rounded-md border border-pink-200 text-pink-600 font-medium"
-            >
-              Ver sitio público
-            </a>
-          </motion.aside>
-        </div>
+          {/* TARJETA DE ROL */}
+          <div className="mt-8 p-4 rounded-2xl bg-pink-100 border border-pink-200">
+            <h3 className="text-sm font-semibold text-pink-700 mb-1">Tu Rol</h3>
+            <p className="text-pink-600 text-sm mb-2">{getRoleLabel(userRole)}</p>
+
+            <ul className="text-xs text-pink-500 space-y-1">
+              <li>🐾 Gestionar perfil</li>
+              {isTeam && <li>🐾 Editar contenido del sitio</li>}
+              {isAdmin && <li>🐾 Control total del sistema</li>}
+            </ul>
+          </div>
+        </aside>
+
+        {/* PANEL PRINCIPAL */}
+        <main className="lg:col-span-3 bg-white rounded-2xl p-6 shadow-lg border border-pink-200 min-h-[500px]">
+          {renderContent()}
+        </main>
       </div>
     </div>
   );
 };
 
 export default Dashboard;
+
+

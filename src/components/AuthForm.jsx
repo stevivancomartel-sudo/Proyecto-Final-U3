@@ -1,13 +1,18 @@
 // src/components/AuthForm.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmail, signInWithGoogle } from "../services/auth";
+
+// IMPORTS CORRECTOS SEGÚN auth.js
+import { 
+  signInWithEmail, 
+  signInWithGoogle 
+} from "../services/auth";
 
 function AuthForm() {
   const navigate = useNavigate();
 
-  const [mode, setMode] = useState("admin"); // Modo visual
-  const [form, setForm] = useState({ displayName: "", email: "", password: "" });
+  const [mode, setMode] = useState("admin");
+  const [form, setForm] = useState({ email: "", password: "" });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -22,14 +27,19 @@ function AuthForm() {
     setSubmitting(true);
 
     try {
+      // LOGIN CORRECTO CON SUPABASE
       await signInWithEmail(form.email, form.password);
+
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
+
       let msg = "Ocurrió un error. Verifica tus datos.";
-      if (err.code === "auth/user-not-found") msg = "No existe una cuenta con ese correo.";
-      else if (err.code === "auth/wrong-password") msg = "Contraseña incorrecta.";
-      else if (err.code === "auth/invalid-email") msg = "Correo no válido.";
+
+      if (err.message.includes("Invalid login credentials")) {
+        msg = "Correo o contraseña incorrectos.";
+      }
+
       setError(msg);
     } finally {
       setSubmitting(false);
@@ -39,7 +49,9 @@ function AuthForm() {
   const handleGoogleLogin = async () => {
     setError("");
     setSubmitting(true);
+
     try {
+      // LOGIN GOOGLE CORRECTO
       await signInWithGoogle();
       navigate("/dashboard");
     } catch (err) {
@@ -53,7 +65,7 @@ function AuthForm() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-100 to-rose-200 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white/90 backdrop-blur-xl rounded-3xl shadow-lg border border-pink-200 p-8 relative">
-        {/* Icono kawaii */}
+
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-400 to-rose-400 w-20 h-20 rounded-full shadow flex items-center justify-center">
           <span className="text-white text-4xl">🐾</span>
         </div>
@@ -65,7 +77,7 @@ function AuthForm() {
           Acceso seguro para el equipo ✨
         </p>
 
-        {/* Switch Admin - Team - Client */}
+        {/* Switch */}
         <div className="flex gap-2 mb-6 text-xs font-medium">
           {["admin", "team", "client"].map((m) => (
             <button

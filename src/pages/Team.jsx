@@ -19,21 +19,21 @@ const Team = () => {
         github: "https://github.com/besnaliz",
       },
     },
-    {
-      id: 2,
-      name: "Tatiana Gonzales",
-      role: "Back-end Developer",
-      bio: "Especialista en lógica de servidor y optimización de APIs.",
-      skills: ["Node.js", "Express", "MongoDB", "REST API"],
-      currentFocus: "Creando sistemas seguros y escalables.",
-      funFact: "Colecciona stickers de programación 🩷",
-      socialLinks: {
-        linkedin: "https://linkedin.com/in/tatiana",
-        github: "https://github.com/tatiana",
-      },
-    },
+    
     {
       id: 3,
+  name: "Xiomara Díaz",
+  role: "Product Manager",
+  bio: "Enfocada en construir productos que combinan creatividad.",
+  skills: ["ProductStrategy", "Roadmapping", "UserResearch"],
+  currentFocus: "Coordinando equipos multidisciplinarios para lanzar soluciones escalables.",
+  funFact: "Organiza su vida con Notion y tiene dashboards para TODO 💗",
+  socialLinks: {
+    linkedin: "https://www.linkedin.com/in/xiomara-diaz/",
+    github: "https://github.com/ximara-dev"},
+    },
+    {
+      id: 4,
       name: "Stefany Vivanco",
       role: "UI/UX Designer",
       bio: "Diseña experiencias digitales intuitivas y memorables.",
@@ -43,6 +43,19 @@ const Team = () => {
       socialLinks: {
         linkedin: "https://linkedin.com/in/stefany",
         behance: "https://behance.net/stefany",
+      },
+    },
+    {
+      id: 2,
+      name: "Sofía Lagos",
+      role: "Back-end Developer",
+      bio: "Especialista en lógica de servidor y optimización de APIs.",
+      skills: ["Node.js", "Express", "MongoDB", "REST API"],
+      currentFocus: "Creando sistemas seguros y escalables.",
+      funFact: "Colecciona stickers de programación 🩷",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/public-profile/settings?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_self_edit_contact-info%3B7qIowolFSgmIKJopB%2B%2B%2B9Q%3D%3D",
+        github: "https://github.com/sofía",
       },
     },
   ];
@@ -107,7 +120,7 @@ const Team = () => {
         <h2 className="text-3xl font-bold text-pink-600 mb-10 text-center">
           🌷 Nuestro Equipo
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {team.map((member) => (
             <TeamMemberCard key={member.id} member={member} />
           ))}

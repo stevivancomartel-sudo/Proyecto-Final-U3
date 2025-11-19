@@ -1,47 +1,24 @@
 // src/services/auth.js
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-  updateProfile,
-  onAuthStateChanged,
-} from "firebase/auth";
 import { auth } from "../firebase";
+import { 
+  signInWithEmailAndPassword, 
+  GoogleAuthProvider, 
+  signInWithPopup,
+  signOut
+} from "firebase/auth";
 
-/**
- * Registra un usuario con email+password y añade displayName si viene
- */
-export async function signUpWithEmail(email, password, displayName) {
-  const cred = await createUserWithEmailAndPassword(auth, email, password);
-  if (displayName) {
-    try {
-      await updateProfile(cred.user, { displayName });
-    } catch (e) {
-      console.warn("No se pudo actualizar displayName:", e);
-    }
-  }
-  return cred;
+// LOGIN CON EMAIL
+export function signInWithEmail(email, password) {
+  return signInWithEmailAndPassword(auth, email, password);
 }
 
-/** Inicia sesión con email/password */
-export async function signInWithEmail(email, password) {
-  return await signInWithEmailAndPassword(auth, email, password);
-}
-
-/** Inicia sesión con Google (popup) */
-export async function signInWithGoogle() {
+// LOGIN CON GOOGLE
+export function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
-  return await signInWithPopup(auth, provider);
+  return signInWithPopup(auth, provider);
 }
 
-/** Cerrar sesión */
-export async function logoutUser() {
-  return await signOut(auth);
-}
-
-/** Listener simple (no es obligatorio usarlo, pero lo exporto por si lo necesitas) */
-export function onAuthStateChange(callback) {
-  return onAuthStateChanged(auth, callback);
+// LOGOUT
+export function logout() {
+  return signOut(auth);
 }
