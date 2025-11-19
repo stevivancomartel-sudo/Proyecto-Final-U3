@@ -6,11 +6,14 @@ import Team from "./pages/Team";
 import Portfolio from "./pages/Portfolio";
 import Skills from "./pages/Skills";
 import Contact from "./pages/Contact";
+
+// ⭐ Agregar DashboardPage
+import DashboardPage from "./pages/DashboardPage";
+
 import "./index.css";
 
 function App() {
   useEffect(() => {
-    // 🐾 Crear cursor principal si no existe
     let cursor = document.querySelector(".custom-cursor");
     if (!cursor) {
       cursor = document.createElement("div");
@@ -18,18 +21,16 @@ function App() {
       document.body.appendChild(cursor);
     }
 
-    // Ocultar cursor nativo
     document.body.style.cursor = "none";
 
     let lastTrailTime = 0;
 
-    // 🌸 Movimiento + huellitas
     const moveCursor = (e) => {
       cursor.style.left = `${e.clientX}px`;
       cursor.style.top = `${e.clientY}px`;
 
       const now = Date.now();
-      // 🌸 Crear huellitas un poco más seguidas (cada 45 ms)
+
       if (now - lastTrailTime > 45) {
         const trail = document.createElement("div");
         trail.className = "paw-trail";
@@ -43,7 +44,6 @@ function App() {
       }
     };
 
-    // 💗 Onda brillante al hacer clic
     const clickEffect = (e) => {
       const explosion = document.createElement("div");
       explosion.className = "click-explosion";
@@ -56,7 +56,6 @@ function App() {
     document.addEventListener("mousemove", moveCursor);
     document.addEventListener("click", clickEffect);
 
-    // Limpieza
     return () => {
       document.removeEventListener("mousemove", moveCursor);
       document.removeEventListener("click", clickEffect);
@@ -73,6 +72,9 @@ function App() {
           <Route path="/portafolio" element={<Portfolio />} />
           <Route path="/habilidades" element={<Skills />} />
           <Route path="/contacto" element={<Contact />} />
+
+          {/* ⭐ Aquí agregamos tu Dashboard */}
+          <Route path="/dashboard" element={<DashboardPage />} />
         </Routes>
       </Layout>
     </Router>
