@@ -85,13 +85,19 @@ const TeamMemberManager = () => {
   };
 
   const handleDelete = async (id) => {
-    try {
-      await deleteDoc(doc(db, "teamMembers", id));
-      fetchTeam();
-    } catch (error) {
-      console.error("Error deleting member:", error);
-    }
-  };
+  const confirmDelete = window.confirm(
+    "Kitty Code 🐾: ¿Estás seguro de que quieres eliminar este miembro?"
+  );
+  if (!confirmDelete) return;
+
+  try {
+    await deleteDoc(doc(db, "teamMembers", id));
+    fetchTeam();
+  } catch (error) {
+    console.error("Error deleting member:", error);
+  }
+};
+
 
   const handleEdit = (m) => {
     setEditingId(m.id);

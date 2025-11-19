@@ -111,22 +111,62 @@ const SkillsManager = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (index) => {
-    if (!selectedCatId) return;
-    if (!window.confirm("¿Estás segura de eliminar esta habilidad?")) return;
+const handleDelete = async (index) => {
+  if (!selectedCatId) return;
 
-    try {
-      const nuevas = habilidades.filter((_, i) => i !== index);
-      await setDoc(
-        doc(db, "skills", selectedCatId),
-        { habilidades: nuevas },
-        { merge: true }
-      );
-    } catch (err) {
-      console.error("Error eliminando habilidad:", err);
-      alert("No se pudo eliminar la habilidad.");
-    }
-  };
+  // Reemplazo de window.confirm con un modal simple de alerta de Kitty Code
+  const confirmed = await new Promise((resolve) => {
+    const modal = document.createElement("div");
+    modal.innerHTML = `
+      <div style="
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;
+        z-index: 9999;
+      ">
+        <div style="
+          background: white; padding: 2rem; border-radius: 12px; text-align: center;
+          max-width: 300px; width: 100%;
+        ">
+          <h2 style="color: #ec4899; font-weight: bold; margin-bottom: 1rem;">Kitty Code 🐾</h2>
+          <p style="margin-bottom: 1.5rem;">¿Estás segura de eliminar esta habilidad?</p>
+          <button id="confirmYes" style="
+            background: #f87171; color: white; padding: 0.5rem 1rem; margin-right: 0.5rem; border-radius: 8px;
+          ">Eliminar</button>
+          <button id="confirmNo" style="
+            background: #d1d5db; color: #374151; padding: 0.5rem 1rem; border-radius: 8px;
+          ">Cancelar</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector("#confirmYes").onclick = () => {
+      resolve(true);
+      document.body.removeChild(modal);
+    };
+    modal.querySelector("#confirmNo").onclick = () => {
+      resolve(false);
+      document.body.removeChild(modal);
+    };
+  });
+
+  if (!confirmed) return;
+
+  // Procede a eliminar
+  try {
+    const nuevas = habilidades.filter((_, i) => i !== index);
+    await setDoc(
+      doc(db, "skills", selectedCatId),
+      { habilidades: nuevas },
+      { merge: true }
+    );
+  } catch (err) {
+    console.error("Error eliminando habilidad:", err);
+    alert("No se pudo eliminar la habilidad.");
+  }
+};
+
+
 
   const handleCreateCategoria = async () => {
     const nombre = window.prompt("Nombre de la nueva categoría:");
