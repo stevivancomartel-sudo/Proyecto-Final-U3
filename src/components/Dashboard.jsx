@@ -9,6 +9,7 @@ import ProjectsManager from "./ProjectsManager";
 import SkillsManager from "./SkillsManager";
 
 const Dashboard = () => {
+  // eslint-disable-next-line no-unused-vars
   const { user, userRole, isAdmin, isTeam } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [loading, setLoading] = useState(false);
@@ -40,7 +41,7 @@ const Dashboard = () => {
 
   const getRoleLabel = (role) => {
     if (role === "admin") return "Administradora ✨";
-    if (role === "team") return "Miembro del Equipo 💖";
+    if (role === "team") return "Administradora 💖";
     return "Usuario";
   };
 
@@ -122,9 +123,10 @@ const Dashboard = () => {
             <p className="text-pink-600 text-sm mb-2">{getRoleLabel(userRole)}</p>
 
             <ul className="text-xs text-pink-500 space-y-1">
-              <li>🐾 Gestionar perfil</li>
+              <li>🐾 Gestionar perfil personal</li>
+               <li>🐾 Control total de todo el sistema</li>
               {isTeam && <li>🐾 Editar contenido del sitio</li>}
-              {isAdmin && <li>🐾 Control total del sistema</li>}
+              {isAdmin && <li>🐾 Control total de todo el sistema</li>}
             </ul>
           </div>
         </aside>

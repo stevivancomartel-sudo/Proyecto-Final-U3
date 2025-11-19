@@ -89,7 +89,7 @@ const Team = () => {
       setTestimonials(testimonialInfo);
       setIsLoading(false);
     }, 700);
-  }, []);
+  }, );
 
   if (isLoading) {
     return (

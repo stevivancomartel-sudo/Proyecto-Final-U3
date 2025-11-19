@@ -8,26 +8,29 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 
 const TeamMemberManager = () => {
   const [team, setTeam] = useState([]);
-  const [formData, setFormData] = useState({
+  const [editingId, setEditingId] = useState(null);
+
+  const [form, setForm] = useState({
     name: "",
     role: "",
     bio: "",
     skills: "",
-    socialLinks: "",
+    currentFocus: "",
+    funFact: "",
+    linkedin: "",
+    github: "",
+    email: "",
   });
-  const [editingId, setEditingId] = useState(null);
 
-  // Load team members
   const fetchTeam = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "teamMembers"));
-      const data = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const snapshot = await getDocs(collection(db, "teamMembers"));
+      const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
       setTeam(data);
     } catch (error) {
       console.error("Error loading team:", error);
@@ -38,16 +41,21 @@ const TeamMemberManager = () => {
     fetchTeam();
   }, []);
 
-  // Handle create/update
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
-      name: formData.name.trim(),
-      role: formData.role.trim(),
-      bio: formData.bio.trim(),
-      skills: formData.skills.split(",").map((s) => s.trim()),
-      socialLinks: formData.socialLinks.split(",").map((s) => s.trim()),
+      name: form.name.trim(),
+      role: form.role.trim(),
+      bio: form.bio.trim(),
+      skills: form.skills.split(",").map((s) => s.trim()),
+      currentFocus: form.currentFocus.trim(),
+      funFact: form.funFact.trim(),
+      socialLinks: {
+        linkedin: form.linkedin,
+        github: form.github,
+        email: form.email,
+      },
     };
 
     try {
@@ -58,12 +66,16 @@ const TeamMemberManager = () => {
         await addDoc(collection(db, "teamMembers"), payload);
       }
 
-      setFormData({
+      setForm({
         name: "",
         role: "",
         bio: "",
         skills: "",
-        socialLinks: "",
+        currentFocus: "",
+        funFact: "",
+        linkedin: "",
+        github: "",
+        email: "",
       });
 
       fetchTeam();
@@ -72,130 +84,192 @@ const TeamMemberManager = () => {
     }
   };
 
-  // Delete member
   const handleDelete = async (id) => {
     try {
       await deleteDoc(doc(db, "teamMembers", id));
       fetchTeam();
     } catch (error) {
-      console.error("Error deleting:", error);
+      console.error("Error deleting member:", error);
     }
   };
 
-  // Fill form to edit
-  const handleEdit = (member) => {
-    setEditingId(member.id);
-    setFormData({
-      name: member.name,
-      role: member.role,
-      bio: member.bio,
-      skills: member.skills.join(", "),
-      socialLinks: member.socialLinks.join(", "),
+  const handleEdit = (m) => {
+    setEditingId(m.id);
+    setForm({
+      name: m.name,
+      role: m.role,
+      bio: m.bio,
+      skills: m.skills.join(", "),
+      currentFocus: m.currentFocus,
+      funFact: m.funFact,
+      linkedin: m.socialLinks.linkedin || "",
+      github: m.socialLinks.github || "",
+      email: m.socialLinks.email || "",
+    });
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+    setForm({
+      name: "",
+      role: "",
+      bio: "",
+      skills: "",
+      currentFocus: "",
+      funFact: "",
+      linkedin: "",
+      github: "",
+      email: "",
     });
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-2xl">
-      <h2 className="text-2xl font-bold text-center mb-4">
-        Team Manager 🐾
+    <div className="bg-pink-50 p-8 rounded-2xl shadow-xl border border-pink-200">
+      <h2 className="text-3xl font-bold text-center text-pink-600 mb-6">
+        🐾 Administrar Miembros del Equipo
       </h2>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {/* FORM */}
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
         <input
           type="text"
-          placeholder="Name"
+          placeholder="Nombre"
           required
-          className="w-full p-3 border rounded-lg"
-          value={formData.name}
-          onChange={(e) =>
-            setFormData({ ...formData, name: e.target.value })
-          }
+          className="p-3 rounded-lg border border-pink-300"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
 
         <input
           type="text"
-          placeholder="Role"
+          placeholder="Rol"
           required
-          className="w-full p-3 border rounded-lg"
-          value={formData.role}
-          onChange={(e) =>
-            setFormData({ ...formData, role: e.target.value })
-          }
+          className="p-3 rounded-lg border border-pink-300"
+          value={form.role}
+          onChange={(e) => setForm({ ...form, role: e.target.value })}
         />
 
         <textarea
-          placeholder="Bio"
+          placeholder="Biografía"
           required
-          className="w-full p-3 border rounded-lg"
-          rows={3}
-          value={formData.bio}
-          onChange={(e) =>
-            setFormData({ ...formData, bio: e.target.value })
-          }
+          className="p-3 rounded-lg border border-pink-300 md:col-span-2"
+          value={form.bio}
+          onChange={(e) => setForm({ ...form, bio: e.target.value })}
+        ></textarea>
+
+        <input
+          type="text"
+          placeholder="Skills (separadas por coma)"
+          className="p-3 rounded-lg border border-pink-300 md:col-span-2"
+          value={form.skills}
+          onChange={(e) => setForm({ ...form, skills: e.target.value })}
         />
 
         <input
           type="text"
-          placeholder="Skills (comma separated)"
-          className="w-full p-3 border rounded-lg"
-          value={formData.skills}
-          onChange={(e) =>
-            setFormData({ ...formData, skills: e.target.value })
-          }
+          placeholder="Enfoque actual"
+          className="p-3 rounded-lg border border-pink-300 md:col-span-2"
+          value={form.currentFocus}
+          onChange={(e) => setForm({ ...form, currentFocus: e.target.value })}
         />
 
         <input
           type="text"
-          placeholder="Social Links (comma separated)"
-          className="w-full p-3 border rounded-lg"
-          value={formData.socialLinks}
-          onChange={(e) =>
-            setFormData({ ...formData, socialLinks: e.target.value })
-          }
+          placeholder="Dato curioso"
+          className="p-3 rounded-lg border border-pink-300 md:col-span-2"
+          value={form.funFact}
+          onChange={(e) => setForm({ ...form, funFact: e.target.value })}
         />
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
-        >
-          {editingId ? "Update Member" : "Add Member"}
-        </button>
+        <h3 className="text-pink-600 font-semibold md:col-span-2 mt-4">
+          🌐 Redes sociales
+        </h3>
+
+        <input
+          type="text"
+          placeholder="LinkedIn"
+          className="p-3 rounded-lg border border-pink-300"
+          value={form.linkedin}
+          onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
+        />
+
+        <input
+          type="text"
+          placeholder="GitHub"
+          className="p-3 rounded-lg border border-pink-300"
+          value={form.github}
+          onChange={(e) => setForm({ ...form, github: e.target.value })}
+        />
+
+        <input
+          type="text"
+          placeholder="Email"
+          className="p-3 rounded-lg border border-pink-300"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
+
+        {/* Buttons */}
+        <div className="mt-4 flex gap-3 md:col-span-2">
+          <motion.button
+            whileHover={{ scale: 1.05, y: -3 }}
+            className="flex-1 bg-pink-500 text-white py-3 rounded-lg"
+            type="submit"
+          >
+            {editingId ? "Actualizar Miembro" : "Agregar Miembro"}
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05, y: -3 }}
+            type="button"
+            onClick={handleCancel}
+            className="flex-1 bg-gray-400 text-white py-3 rounded-lg"
+          >
+            Cancelar
+          </motion.button>
+        </div>
       </form>
 
-      {/* List */}
-      <ul className="mt-8 space-y-4">
-        {team.map((member) => (
-          <li
-            key={member.id}
-            className="p-4 border rounded-lg flex justify-between items-center"
+      {/* LIST */}
+      <div className="space-y-4 mt-8">
+        {team.map((m) => (
+          <motion.div
+            key={m.id}
+            className="bg-white p-4 border border-pink-200 rounded-xl shadow-sm flex justify-between cursor-grab"
+            drag
+            dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+            whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
           >
             <div>
-              <p className="font-semibold">{member.name}</p>
-              <p className="text-sm text-gray-600">{member.role}</p>
-              <p className="text-xs mt-1">{member.bio}</p>
+              <p className="font-bold text-pink-600">{m.name}</p>
+              <p className="text-sm text-gray-600">{m.role}</p>
+              <p className="text-gray-500 text-xs mt-1">{m.bio}</p>
             </div>
-
-            <div className="space-x-2">
-              <button
-                onClick={() => handleEdit(member)}
-                className="px-3 py-1 bg-yellow-400 rounded-lg text-black"
+            <div className="flex space-x-2">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                onClick={() => handleEdit(m)}
+                className="px-3 py-1 bg-yellow-400 text-black rounded-lg"
               >
-                Edit
-              </button>
-
-              <button
-                onClick={() => handleDelete(member.id)}
-                className="px-3 py-1 bg-red-600 rounded-lg text-white"
+                Editar
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                onClick={() => handleDelete(m.id)}
+                className="px-3 py-1 bg-red-500 text-white rounded-lg"
               >
-                Delete
-              </button>
+                Eliminar
+              </motion.button>
             </div>
-          </li>
+          </motion.div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };
 
 export default TeamMemberManager;
+
