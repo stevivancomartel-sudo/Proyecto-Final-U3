@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 
-// Firebase
 import { db } from "../firebase";
 import {
   collection,
@@ -27,68 +25,61 @@ const ProjectsManager = () => {
     group: "",
   });
 
-  // Colección de Firebase
-  const projectsCollection = collection(db, "projects");
+  const projectsCollection = collection(db, "Proyectos");
 
-  // Leer proyectos desde Firestore
   const fetchProjects = async () => {
     const data = await getDocs(projectsCollection);
     setProjects(data.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
   };
 
-useEffect(() => {
-  const loadData = async () => {
-    const data = await getDocs(projectsCollection);
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await getDocs(projectsCollection);
 
-    // Si NO hay proyectos, insertamos los iniciales
-    if (data.empty) {
-      const initialProjects = [
-        {
-          title: "Página Web Kitty Code",
-          category: "Desarrollo Web",
-          description:
-            "Creamos el sitio web oficial de Kitty Code con un diseño moderno y colores rosados pastel. Es un espacio donde mostramos nuestros servicios, equipo y contacto.",
-          teamMembers: ["Besnaliz", "Tatiana", "Stefany"],
-          impact:
-            "Ayuda a que más personas conozcan nuestros proyectos y aprendan sobre programación.",
-          group: "",
-        },
-        {
-          title: "Formulario Interactivo en React",
-          category: "Aplicación React",
-          description:
-            "Desarrollamos un formulario que guarda el nombre, correo y mensaje del usuario para practicar estados y eventos.",
-          teamMembers: ["Besnaliz", "Tatiana", "Stefany"],
-          impact: "Permite mejorar la práctica en React y aprender interacción del usuario.",
-          group: "",
-        },
-        {
-          title: "Tienda Online Rosa",
-          category: "E-commerce",
-          description:
-            "Tienda online con carrito de compras y pasarela de pago para productos educativos.",
-          teamMembers: ["Tatiana", "Stefany"],
-          impact:
-            "Fomenta el comercio digital y la experiencia de compra para los usuarios de Kitty Code.",
-          group: "",
-        },
-      ];
+      if (data.empty) {
+        const initialProjects = [
+          {
+            title: "Página Web Kitty Code",
+            category: "Desarrollo Web",
+            description:
+              "Creamos el sitio web oficial de Kitty Code con un diseño moderno y colores rosados pastel. Es un espacio donde mostramos nuestros servicios, equipo y contacto.",
+            teamMembers: ["Besnaliz", "Tatiana", "Stefany"],
+            impact:
+              "Ayuda a que más personas conozcan nuestros proyectos y aprendan sobre programación.",
+            group: "",
+          },
+          {
+            title: "Formulario Interactivo en React",
+            category: "Aplicación React",
+            description:
+              "Desarrollamos un formulario que guarda el nombre, correo y mensaje del usuario para practicar estados y eventos.",
+            teamMembers: ["Besnaliz", "Tatiana", "Stefany"],
+            impact:
+              "Permite mejorar la práctica en React y aprender interacción del usuario.",
+            group: "",
+          },
+          {
+            title: "Tienda Online Rosa",
+            category: "E-commerce",
+            description:
+              "Tienda online con carrito de compras y pasarela de pago para productos educativos.",
+            teamMembers: ["Tatiana", "Stefany"],
+            impact:
+              "Fomenta el comercio digital y la experiencia de compra para los usuarios de Kitty Code.",
+            group: "",
+          },
+        ];
 
-      for (const proj of initialProjects) {
-        await addDoc(projectsCollection, proj);
+        for (const proj of initialProjects) {
+          await addDoc(projectsCollection, proj);
+        }
       }
-    }
 
-    // Finalmente cargamos
-    fetchProjects();
-  };
+      fetchProjects();
+    };
 
-  loadData();
-}, []);
-
-
-
-
+    loadData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -103,12 +94,11 @@ useEffect(() => {
     }
   };
 
-  // Crear o actualizar proyecto
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (editingProject) {
-      const projectDoc = doc(db, "projects", editingProject.id);
+      const projectDoc = doc(db, "Proyectos", editingProject.id);
       await updateDoc(projectDoc, formData);
     } else {
       await addDoc(projectsCollection, formData);
@@ -118,24 +108,21 @@ useEffect(() => {
     fetchProjects();
   };
 
-  // Editar
   const handleEdit = (project) => {
     setEditingProject(project);
     setFormData({ ...project });
     setShowForm(true);
   };
 
-  // Eliminar
   const handleDelete = async (id) => {
     if (!window.confirm("¿Deseas eliminar este proyecto?")) return;
 
-    const projectDoc = doc(db, "projects", id);
+    const projectDoc = doc(db, "Proyectos", id);
     await deleteDoc(projectDoc);
 
     fetchProjects();
   };
 
-  // Resetear formulario
   const resetForm = () => {
     setFormData({
       title: "",
@@ -151,7 +138,6 @@ useEffect(() => {
 
   return (
     <div className="p-6 bg-pink-50 rounded-xl shadow-lg border border-pink-200">
-
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-pink-600">📁 Gestión de Proyectos</h2>
 
@@ -171,7 +157,6 @@ useEffect(() => {
           </h3>
 
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
             <input
               type="text"
               name="title"
@@ -245,7 +230,6 @@ useEffect(() => {
                 Cancelar
               </motion.button>
             </div>
-
           </form>
         </div>
       )}
@@ -304,4 +288,3 @@ useEffect(() => {
 };
 
 export default ProjectsManager;
-

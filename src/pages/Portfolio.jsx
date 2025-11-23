@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import projectsData from "../data/projects.json";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
 const Portfolio = () => {
   const [projects, setProjects] = useState([]);
@@ -13,11 +14,14 @@ const Portfolio = () => {
   ];
 
   useEffect(() => {
-    setTimeout(() => {
-      setProjects(projectsData);
-      setFilteredProjects(projectsData);
+    const unsubscribe = onSnapshot(collection(db, "Proyectos"), (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setProjects(data);
+      setFilteredProjects(data);
       setIsLoading(false);
-    }, 800);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -47,7 +51,6 @@ const Portfolio = () => {
 
   return (
     <div className="py-16 bg-pink-50">
-      {/* Encabezado */}
       <section className="bg-pink-300 text-white py-20 text-center">
         <h1 className="text-4xl font-bold mb-6">Portafolio de Kitty Code 💻</h1>
         <p className="text-xl max-w-2xl mx-auto">
@@ -56,7 +59,6 @@ const Portfolio = () => {
         </p>
       </section>
 
-      {/* Impact Section */}
       <section className="py-16 bg-pink-100 text-center">
         <h2 className="text-3xl lg:text-4xl font-bold text-pink-700 mb-4">
           El Impacto de Nuestros Proyectos
@@ -85,7 +87,6 @@ const Portfolio = () => {
         </div>
       </section>
 
-      {/* Filtros */}
       <section className="py-8 bg-white border-b">
         <div className="flex flex-wrap justify-center gap-4">
           {categories.map((category) => (
@@ -104,7 +105,6 @@ const Portfolio = () => {
         </div>
       </section>
 
-      {/* Proyectos */}
       <section className="py-16 bg-pink-50">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
           {filteredProjects.map((project) => (
@@ -132,7 +132,7 @@ const ProjectCard = ({ project }) => {
       <p className="text-gray-700 mb-4">{project.description}</p>
 
       <p className="text-sm text-gray-500 mb-4">
-        <strong>Equipo:</strong> {project.teamMembers.join(", ")}
+        <strong>Equipo:</strong> {project.teamMembers?.join(", ")}
       </p>
 
       <a
@@ -146,4 +146,3 @@ const ProjectCard = ({ project }) => {
 };
 
 export default Portfolio;
-

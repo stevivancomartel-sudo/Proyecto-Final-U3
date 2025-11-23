@@ -1,11 +1,9 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyAGKtIHKLUMIqBYPGV6_rC-ypQUTlBzxHI",
-  authDomain: "kitty-code-d97cb.firebaseapp.com",
-  projectId: "kitty-code-d97cb",
-  storageBucket: "kitty-code-d97cb.firebasestorage.app",
-  messagingSenderId: "95588739929",
-  appId: "1:95588739929:web:e0b2b6f7c1503a7889ba48",
-  measurementId: "G-1BS4GRZG08",
+  apiKey: "AIzaSyDrMgrKVoRrmvao4QSy-3-T896n6VFNNDQ",
+  authDomain: "mi-app-holi.firebaseapp.com",
+  projectId: "mi-app-holi",
+  storageBucket: "mi-app-holi.firebasestorage.app",
+  messagingSenderId: "511502008091",
+  appId: "1:511502008091:web:ee0c10607e5fca952f9dbe"
 };
-
 export default firebaseConfig;

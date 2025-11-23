@@ -1,10 +1,6 @@
 @import "tailwindcss";
 
-/* =====================================================
-   🐾 CURSOR DE PATTITA + EFECTOS BRILLANTES MEJORADOS
-===================================================== */
 
-/* 🩷 Cursor principal */
 .custom-cursor {
   position: fixed;
   width: 35px;

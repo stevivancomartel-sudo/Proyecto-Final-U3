@@ -10,6 +10,9 @@ import {
   FaPaperPlane
 } from "react-icons/fa";
 
+import { db } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
+
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -42,12 +45,26 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 2000));
-    console.log("📨 Datos enviados:", formData);
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setFormData({ name: "", email: "", projectType: "", message: "" });
+
+    try {
+      await addDoc(collection(db, "Contactos"), {
+        name: formData.name,
+        email: formData.email,
+        projectType: formData.projectType,
+        message: formData.message,
+        createdAt: new Date(),
+      });
+
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      setFormData({ name: "", email: "", projectType: "", message: "" });
+    } catch (error) {
+      console.error("Error guardando en Firebase:", error);
+      setIsSubmitting(false);
+      alert("Hubo un error al enviar tu mensaje.");
+    }
   };
 
   if (isSubmitted) {
@@ -74,7 +91,6 @@ const Contact = () => {
 
   return (
     <div className="bg-pink-50 min-h-screen py-16">
-      {/* ENCABEZADO */}
       <section className="bg-pink-300 text-white py-20 text-center">
         <h1 className="text-4xl font-bold mb-6">💌 Contáctanos</h1>
         <p className="text-xl max-w-2xl mx-auto">
@@ -82,9 +98,7 @@ const Contact = () => {
         </p>
       </section>
 
-      {/* CONTENIDO */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 px-6 mt-12">
-        {/* INFO */}
         <div className="bg-white rounded-2xl shadow-md p-8 border border-pink-100 transform hover:-translate-y-2 hover:scale-105 transition-all">
           <h2 className="text-2xl font-semibold text-pink-600 mb-4 text-center bg-pink-100 rounded-xl py-2 px-4 inline-block">
             🌷 Información
@@ -113,13 +127,11 @@ const Contact = () => {
           </div>
         </div>
 
-        {/* FORMULARIO */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-md p-8 border border-pink-100 transform hover:-translate-y-2 hover:scale-105 transition-all">
           <h2 className="text-2xl font-semibold text-pink-600 mb-6 text-center bg-pink-100 rounded-xl py-2 px-4 inline-block">
             💬 Envíanos un mensaje
           </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Nombre */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre *</label>
               <input
@@ -135,7 +147,6 @@ const Contact = () => {
               {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
             </div>
 
-            {/* Correo */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Correo *</label>
               <input
@@ -151,7 +162,6 @@ const Contact = () => {
               {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
             </div>
 
-            {/* Tipo de proyecto */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Tipo de proyecto *</label>
               <select
@@ -171,7 +181,6 @@ const Contact = () => {
               {errors.projectType && <p className="text-red-500 text-sm">{errors.projectType}</p>}
             </div>
 
-            {/* Mensaje */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Mensaje *</label>
               <textarea
@@ -187,7 +196,6 @@ const Contact = () => {
               {errors.message && <p className="text-red-500 text-sm">{errors.message}</p>}
             </div>
 
-            {/* Botón */}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -208,5 +216,3 @@ const Contact = () => {
 };
 
 export default Contact;
-
-
