@@ -1,95 +1,59 @@
 import { useState, useEffect } from "react";
+import { db } from "../firebase";
+import { collection, onSnapshot } from "firebase/firestore";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 
 const Team = () => {
   const [team, setTeam] = useState([]);
-  const [testimonials, setTestimonials] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [testimonials, setTestimonials] = useState([
+    {
+      id: "t1",
+      name: "Ana Pérez",
+      role: "CEO – DreamTech Studio",
+      company: "TechGirls",
+      content: "El equipo de Kitty Code superó mis expectativas. Son creativas, responsables y muy profesionales.",
+      rating: 5,
+    },
+    {
+      id: "t2",
+      name: "María López",
+      role: "Directora de Marketing – FreshBrand",
+      company: "CreativeHub",
+      content: "Me encantó cómo transformaron mi idea en una página web moderna y funcional. ¡Súper recomendadas!",
+      rating: 4,
+    },
+    {
+      id: "t3",
+      name: "Lucía Torres",
+      role: "Fotógrafa – PixelArt Studio",
+      company: "DevSolutions",
+      content: "Trabajar con Kitty Code fue una experiencia fluida y divertida. Su estilo único marcó la diferencia.",
+      rating: 5,
+    },
+    {
+      id: "t4",
+      name: "Sofía Ramírez",
+      role: "Emprendedora – DulceCafé",
+      company: "Innovatech",
+      content: "Fueron muy atentas y entendieron exactamente lo que necesitaba para mi negocio.",
+      rating: 5,
+    },
+  ]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const teamInfo = [
-    {
-      id: 1,
-      name: "Besnaliz Faria",
-      role: "Front-end Developer",
-      bio: "Apasionada por crear interfaces atractivas y accesibles.",
-      skills: ["React", "Tailwind", "CSS", "JavaScript"],
-      currentFocus: "Desarrollando sitios web dinámicos y responsivos.",
-      funFact: "Ama los gatos y el café ☕",
-      socialLinks: {
-        linkedin: "https://linkedin.com/in/besnaliz",
-        github: "https://github.com/besnaliz",
-      },
-    },
-    
-    {
-      id: 3,
-  name: "Xiomara Díaz",
-  role: "Product Manager",
-  bio: "Enfocada en construir productos que combinan creatividad.",
-  skills: ["ProductStrategy", "Roadmapping", "UserResearch"],
-  currentFocus: "Coordinando equipos multidisciplinarios para lanzar soluciones escalables.",
-  funFact: "Organiza su vida con Notion y tiene dashboards para TODO 💗",
-  socialLinks: {
-    linkedin: "https://www.linkedin.com/in/xiomara-diaz/",
-    github: "https://github.com/ximara-dev"},
-    },
-    {
-      id: 4,
-      name: "Stefany Vivanco",
-      role: "UI/UX Designer",
-      bio: "Diseña experiencias digitales intuitivas y memorables.",
-      skills: ["Figma", "Adobe XD", "Illustrator", "Photoshop"],
-      currentFocus: "Prototipando y testeando interfaces con usuarios.",
-      funFact: "Fan de la fotografía urbana 📸",
-      socialLinks: {
-        linkedin: "https://linkedin.com/in/stefany",
-        behance: "https://behance.net/stefany",
-      },
-    },
-    {
-      id: 2,
-      name: "Sofía Lagos",
-      role: "Back-end Developer",
-      bio: "Especialista en lógica de servidor y optimización de APIs.",
-      skills: ["Node.js", "Express", "MongoDB", "REST API"],
-      currentFocus: "Creando sistemas seguros y escalables.",
-      funFact: "Colecciona stickers de programación 🩷",
-      socialLinks: {
-        linkedin: "https://www.linkedin.com/public-profile/settings?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_self_edit_contact-info%3B7qIowolFSgmIKJopB%2B%2B%2B9Q%3D%3D",
-        github: "https://github.com/sofía",
-      },
-    },
-  ];
-
-  const testimonialInfo = [
-    {
-      id: 1,
-      name: "Laura Fernández",
-      role: "CEO Tech Solutions",
-      company: "Tech Solutions",
-      project: "Sitio Web Corporativo",
-      content:
-        "El equipo hizo un trabajo impecable, cumpliendo los plazos y superando nuestras expectativas.",
-      rating: 5,
-    },
-    {
-      id: 2,
-      name: "Jorge Medina",
-      role: "Project Manager",
-      company: "Innovatech",
-      project: "App Móvil",
-      content:
-        "Su creatividad y dedicación hicieron que nuestro proyecto fuese un éxito rotundo.",
-      rating: 5,
-    },
-  ];
+  const teamRef = collection(db, "teamMembers");
 
   useEffect(() => {
-    setTimeout(() => {
-      setTeam(teamInfo);
-      setTestimonials(testimonialInfo);
+    const unsubTeam = onSnapshot(teamRef, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setTeam(data);
       setIsLoading(false);
-    }, 700);
-  }, );
+    });
+
+    return () => unsubTeam();
+  }, []);
 
   if (isLoading) {
     return (
@@ -104,37 +68,51 @@ const Team = () => {
 
   return (
     <div className="bg-pink-50 min-h-screen">
-      {/* Header */}
+      {/* HEADER */}
       <section className="bg-gradient-to-r from-pink-300 to-rose-200 text-white py-20 text-center shadow-md">
         <h1 className="text-4xl lg:text-5xl font-bold mb-4 drop-shadow-sm">
           Conoce a nuestro equipo
         </h1>
         <p className="text-lg text-white/90 max-w-2xl mx-auto">
-          Somos un grupo de chicas apasionadas por la tecnología y el diseño,
-          creando proyectos llenos de color y propósito 💖
+          Somos un grupo de chicas apasionadas por la tecnología y el diseño 💖
         </p>
       </section>
 
-      {/* Team Members */}
+      {/* TEAM MEMBERS */}
       <section className="py-16 px-6 max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold text-pink-600 mb-10 text-center">
           🌷 Nuestro Equipo
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
           {team.map((member) => (
-            <TeamMemberCard key={member.id} member={member} />
+            <motion.div
+              key={member.id}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.3 }}
+            >
+              <TeamMemberCard member={member} />
+            </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* TESTIMONIALS */}
       <section className="py-16 bg-white px-6">
         <h2 className="text-3xl font-bold text-pink-600 mb-10 text-center">
-          💕 Lo que dicen de nosotras
+Cada comentario es una patita más que nos impulsa a seguir creando 💖🐾
         </h2>
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
           {testimonials.map((t) => (
-            <TestimonialCard key={t.id} testimonial={t} />
+            <motion.div
+              key={t.id}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <TestimonialCard testimonial={t} />
+            </motion.div>
           ))}
         </div>
       </section>
@@ -142,7 +120,7 @@ const Team = () => {
   );
 };
 
-// 🌸 Tarjeta del equipo
+// 🌸 TARJETA DEL EQUIPO
 const TeamMemberCard = ({ member }) => (
   <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all p-6 border border-pink-100 text-center">
     <div className="text-5xl mb-4">👩‍💻</div>
@@ -151,7 +129,7 @@ const TeamMemberCard = ({ member }) => (
     <p className="text-gray-500 text-sm mb-4">{member.bio}</p>
 
     <div className="flex flex-wrap justify-center gap-2 mb-4">
-      {member.skills.map((skill, i) => (
+      {member.skills?.map((skill, i) => (
         <span
           key={i}
           className="bg-pink-100 text-pink-600 px-2 py-1 rounded-full text-xs font-semibold"
@@ -164,27 +142,29 @@ const TeamMemberCard = ({ member }) => (
     <div className="bg-rose-50 p-3 rounded-lg text-sm text-gray-700 mb-3">
       🎯 <strong>Enfoque actual:</strong> {member.currentFocus}
     </div>
+
     <div className="bg-pink-50 p-3 rounded-lg text-sm text-gray-700 mb-4">
       ✨ <strong>Dato curioso:</strong> {member.funFact}
     </div>
 
     <div className="flex justify-center gap-4 text-xl text-pink-500">
-      {Object.entries(member.socialLinks).map(([platform, url]) => (
-        <a
-          key={platform}
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:scale-125 transition-transform"
-        >
-          {getSocialIcon(platform)}
-        </a>
-      ))}
+      {member.socialLinks &&
+        Object.entries(member.socialLinks).map(([platform, url]) => (
+          <a
+            key={platform}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:scale-125 transition-transform"
+          >
+            {getSocialIcon(platform)}
+          </a>
+        ))}
     </div>
   </div>
 );
 
-// 💬 Tarjeta de testimonio
+// 💬 TARJETA DE TESTIMONIO
 const TestimonialCard = ({ testimonial }) => (
   <div className="bg-pink-50 border border-pink-100 rounded-2xl shadow-sm p-6">
     <p className="text-gray-700 italic mb-4">“{testimonial.content}”</p>
@@ -199,17 +179,12 @@ const TestimonialCard = ({ testimonial }) => (
   </div>
 );
 
-// Iconos de redes
 const getSocialIcon = (platform) => {
-  const icons = {
-    linkedin: "💼",
-    github: "📚",
-    behance: "🎨",
-    email: "📧",
-  };
+  const icons = { linkedin: "💼", github: "📚", behance: "🎨", email: "📧" };
   return icons[platform] || "🔗";
 };
 
 export default Team;
+
 
 

@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import {
   collection,
-  getDocs,
   addDoc,
   updateDoc,
   deleteDoc,
   doc,
+  onSnapshot,
+  getDocs
 } from "firebase/firestore";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
@@ -27,20 +28,104 @@ const TeamMemberManager = () => {
     email: "",
   });
 
-  const fetchTeam = async () => {
-    try {
-      const snapshot = await getDocs(collection(db, "teamMembers"));
-      const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-      setTeam(data);
-    } catch (error) {
-      console.error("Error loading team:", error);
-    }
-  };
+  const collectionRef = collection(db, "teamMembers");
 
+  // ⭐ 1. Inserción automática de miembros SOLO SI LA COLECCIÓN ESTÁ VACÍA
   useEffect(() => {
-    fetchTeam();
+    const initialTeam = [
+      {
+        name: "Besnaliz Faria",
+        role: "Front-end Developer",
+        bio: "Apasionada por crear interfaces atractivas y accesibles.",
+        skills: ["React", "Tailwind", "CSS", "JavaScript"],
+        currentFocus: "Desarrollando sitios web dinámicos y responsivos.",
+        funFact: "Ama los gatos y el café ☕",
+        socialLinks: {
+          linkedin: "https://linkedin.com/in/besnaliz",
+          github: "https://github.com/besnaliz",
+          email: "",
+        },
+      },
+      {
+        name: "Xiomara Díaz",
+        role: "Product Manager",
+        bio: "Enfocada en construir productos que combinan creatividad.",
+        skills: ["ProductStrategy", "Roadmapping", "UserResearch"],
+        currentFocus:
+          "Coordinando equipos multidisciplinarios para soluciones escalables.",
+        funFact:
+          "Organiza su vida con Notion y tiene dashboards para TODO 💗",
+        socialLinks: {
+          linkedin: "https://www.linkedin.com/in/xiomara-diaz/",
+          github: "https://github.com/ximara-dev",
+          email: "",
+        },
+      },
+      {
+        name: "Stefany Vivanco",
+        role: "UI/UX Designer",
+        bio: "Diseña experiencias digitales intuitivas y memorables.",
+        skills: ["Figma", "Adobe XD", "Illustrator", "Photoshop"],
+        currentFocus: "Prototipando y testeando interfaces con usuarios.",
+        funFact: "Fan de la fotografía urbana 📸",
+        socialLinks: {
+          linkedin: "https://linkedin.com/in/stefany",
+          behance: "https://behance.net/stefany",
+          email: "",
+        },
+      },
+      {
+        name: "Sofía Lagos",
+        role: "Back-end Developer",
+        bio: "Especialista en lógica de servidor y optimización de APIs.",
+        skills: ["Node.js", "Express", "MongoDB", "REST API"],
+        currentFocus: "Creando sistemas seguros y escalables.",
+        funFact: "Colecciona stickers de programación 🩷",
+        socialLinks: {
+          linkedin:
+            "https://www.linkedin.com/public-profile/settings?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_self_edit_contact-info%3B7qIowolFSgmIKJopB%2B%2B%2B9Q%3D%3D",
+          github: "https://github.com/sofía",
+          email: "",
+        },
+      },
+    ];
+
+    const seedDataIfEmpty = async () => {
+      const snapshot = await getDocs(collectionRef);
+
+      if (snapshot.empty) {
+        console.log("🌸 Insertando miembros iniciales...");
+        for (const member of initialTeam) {
+          await addDoc(collectionRef, member);
+        }
+      } else {
+        console.log("🌸 Colección ya tiene datos, no se insertará nada.");
+      }
+    };
+
+    seedDataIfEmpty();
   }, []);
 
+  // ⭐ 2. Listener en TIEMPO REAL (está perfecto)
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collectionRef,
+      (snapshot) => {
+        const data = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }));
+        setTeam(data);
+      },
+      (error) => {
+        console.error("Real-time error:", error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  // ⭐ 3. Guardar (agregar o actualizar)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -63,7 +148,7 @@ const TeamMemberManager = () => {
         await updateDoc(doc(db, "teamMembers", editingId), payload);
         setEditingId(null);
       } else {
-        await addDoc(collection(db, "teamMembers"), payload);
+        await addDoc(collectionRef, payload);
       }
 
       setForm({
@@ -77,27 +162,15 @@ const TeamMemberManager = () => {
         github: "",
         email: "",
       });
-
-      fetchTeam();
     } catch (error) {
       console.error("Error saving member:", error);
     }
   };
 
   const handleDelete = async (id) => {
-  const confirmDelete = window.confirm(
-    "Kitty Code 🐾: ¿Estás seguro de que quieres eliminar este miembro?"
-  );
-  if (!confirmDelete) return;
-
-  try {
+    if (!window.confirm("¿Eliminar este miembro?")) return;
     await deleteDoc(doc(db, "teamMembers", id));
-    fetchTeam();
-  } catch (error) {
-    console.error("Error deleting member:", error);
-  }
-};
-
+  };
 
   const handleEdit = (m) => {
     setEditingId(m.id);
@@ -218,7 +291,6 @@ const TeamMemberManager = () => {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
-        {/* Buttons */}
         <div className="mt-4 flex gap-3 md:col-span-2">
           <motion.button
             whileHover={{ scale: 1.05, y: -3 }}
@@ -247,13 +319,17 @@ const TeamMemberManager = () => {
             className="bg-white p-4 border border-pink-200 rounded-xl shadow-sm flex justify-between cursor-grab"
             drag
             dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
-            whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
+            whileHover={{
+              scale: 1.03,
+              boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+            }}
           >
             <div>
               <p className="font-bold text-pink-600">{m.name}</p>
               <p className="text-sm text-gray-600">{m.role}</p>
               <p className="text-gray-500 text-xs mt-1">{m.bio}</p>
             </div>
+
             <div className="flex space-x-2">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -262,6 +338,7 @@ const TeamMemberManager = () => {
               >
                 Editar
               </motion.button>
+
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 onClick={() => handleDelete(m.id)}
@@ -278,4 +355,5 @@ const TeamMemberManager = () => {
 };
 
 export default TeamMemberManager;
+
 

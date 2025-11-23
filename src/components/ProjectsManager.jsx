@@ -2,58 +2,97 @@ import React, { useState, useEffect } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 
-// Datos iniciales de ejemplo
-const initialProjects = [
-  {
-    id: 1,
-    title: "Página Web Kitty Code",
-    category: "Desarrollo Web",
-    description:
-      "Creamos el sitio web oficial de Kitty Code con un diseño moderno y colores rosados pastel. Es un espacio donde mostramos nuestros servicios, equipo y contacto.",
-    teamMembers: ["Besnaliz", "Tatiana", "Stefany"],
-    impact:
-      "Ayuda a que más personas conozcan nuestros proyectos y aprendan sobre programación.",
-  },
-  {
-    id: 2,
-    title: "Formulario Interactivo en React",
-    category: "Aplicación React",
-    description:
-      "Desarrollamos un formulario que guarda el nombre, correo y mensaje del usuario. Toda la información se muestra en consola para practicar estados y eventos.",
-    teamMembers: ["Besnaliz", "Tatiana", "Stefany"],
-    impact:
-      "Permite mejorar la práctica en React y facilita la comunicación con los usuarios.",
-  },
-  {
-    id: 3,
-    title: "Tienda Online Rosa",
-    category: "E-commerce",
-    description:
-      "Creación de una tienda online para vender productos tecnológicos y educativos. Incluye carrito de compras y pasarela de pago.",
-    teamMembers: ["Tatiana", "Stefany"],
-    impact:
-      "Fomenta el comercio digital y la experiencia de compra para los usuarios de Kitty Code.",
-  },
-];
+// Firebase
+import { db } from "../firebase";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 
 const ProjectsManager = () => {
   const [projects, setProjects] = useState([]);
   const [editingProject, setEditingProject] = useState(null);
   const [showForm, setShowForm] = useState(false);
+
   const [formData, setFormData] = useState({
     title: "",
     category: "",
     description: "",
     teamMembers: [],
     impact: "",
+    group: "",
   });
 
-  useEffect(() => {
-    setProjects(initialProjects);
-  }, []);
+  // Colección de Firebase
+  const projectsCollection = collection(db, "projects");
+
+  // Leer proyectos desde Firestore
+  const fetchProjects = async () => {
+    const data = await getDocs(projectsCollection);
+    setProjects(data.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+  };
+
+useEffect(() => {
+  const loadData = async () => {
+    const data = await getDocs(projectsCollection);
+
+    // Si NO hay proyectos, insertamos los iniciales
+    if (data.empty) {
+      const initialProjects = [
+        {
+          title: "Página Web Kitty Code",
+          category: "Desarrollo Web",
+          description:
+            "Creamos el sitio web oficial de Kitty Code con un diseño moderno y colores rosados pastel. Es un espacio donde mostramos nuestros servicios, equipo y contacto.",
+          teamMembers: ["Besnaliz", "Tatiana", "Stefany"],
+          impact:
+            "Ayuda a que más personas conozcan nuestros proyectos y aprendan sobre programación.",
+          group: "",
+        },
+        {
+          title: "Formulario Interactivo en React",
+          category: "Aplicación React",
+          description:
+            "Desarrollamos un formulario que guarda el nombre, correo y mensaje del usuario para practicar estados y eventos.",
+          teamMembers: ["Besnaliz", "Tatiana", "Stefany"],
+          impact: "Permite mejorar la práctica en React y aprender interacción del usuario.",
+          group: "",
+        },
+        {
+          title: "Tienda Online Rosa",
+          category: "E-commerce",
+          description:
+            "Tienda online con carrito de compras y pasarela de pago para productos educativos.",
+          teamMembers: ["Tatiana", "Stefany"],
+          impact:
+            "Fomenta el comercio digital y la experiencia de compra para los usuarios de Kitty Code.",
+          group: "",
+        },
+      ];
+
+      for (const proj of initialProjects) {
+        await addDoc(projectsCollection, proj);
+      }
+    }
+
+    // Finalmente cargamos
+    fetchProjects();
+  };
+
+  loadData();
+}, []);
+
+
+
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
     if (name === "teamMembers") {
       setFormData((prev) => ({
         ...prev,
@@ -64,29 +103,39 @@ const ProjectsManager = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  // Crear o actualizar proyecto
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (editingProject) {
-      setProjects((prev) =>
-        prev.map((p) => (p.id === editingProject.id ? { ...formData, id: p.id } : p))
-      );
+      const projectDoc = doc(db, "projects", editingProject.id);
+      await updateDoc(projectDoc, formData);
     } else {
-      setProjects((prev) => [...prev, { ...formData, id: Date.now() }]);
+      await addDoc(projectsCollection, formData);
     }
+
     resetForm();
+    fetchProjects();
   };
 
+  // Editar
   const handleEdit = (project) => {
     setEditingProject(project);
     setFormData({ ...project });
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
+  // Eliminar
+  const handleDelete = async (id) => {
     if (!window.confirm("¿Deseas eliminar este proyecto?")) return;
-    setProjects((prev) => prev.filter((p) => p.id !== id));
+
+    const projectDoc = doc(db, "projects", id);
+    await deleteDoc(projectDoc);
+
+    fetchProjects();
   };
 
+  // Resetear formulario
   const resetForm = () => {
     setFormData({
       title: "",
@@ -94,6 +143,7 @@ const ProjectsManager = () => {
       description: "",
       teamMembers: [],
       impact: "",
+      group: "",
     });
     setEditingProject(null);
     setShowForm(false);
@@ -101,8 +151,10 @@ const ProjectsManager = () => {
 
   return (
     <div className="p-6 bg-pink-50 rounded-xl shadow-lg border border-pink-200">
+
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-pink-600">📁 Gestión de Proyectos</h2>
+
         <motion.button
           whileHover={{ scale: 1.05 }}
           onClick={() => setShowForm(true)}
@@ -117,7 +169,9 @@ const ProjectsManager = () => {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             {editingProject ? "Editar Proyecto" : "Nuevo Proyecto"}
           </h3>
+
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
             <input
               type="text"
               name="title"
@@ -127,6 +181,7 @@ const ProjectsManager = () => {
               onChange={handleInputChange}
               className="p-3 rounded-lg border border-pink-300"
             />
+
             <input
               type="text"
               name="category"
@@ -136,6 +191,7 @@ const ProjectsManager = () => {
               onChange={handleInputChange}
               className="p-3 rounded-lg border border-pink-300"
             />
+
             <textarea
               name="description"
               placeholder="Descripción"
@@ -143,7 +199,8 @@ const ProjectsManager = () => {
               value={formData.description}
               onChange={handleInputChange}
               className="p-3 rounded-lg border border-pink-300 md:col-span-2"
-            ></textarea>
+            />
+
             <input
               type="text"
               name="teamMembers"
@@ -152,13 +209,23 @@ const ProjectsManager = () => {
               onChange={handleInputChange}
               className="p-3 rounded-lg border border-pink-300 md:col-span-2"
             />
+
             <textarea
               name="impact"
               placeholder="Impacto del proyecto"
               value={formData.impact}
               onChange={handleInputChange}
               className="p-3 rounded-lg border border-pink-300 md:col-span-2"
-            ></textarea>
+            />
+
+            <input
+              type="text"
+              name="group"
+              placeholder="Grupo (opcional)"
+              value={formData.group}
+              onChange={handleInputChange}
+              className="p-3 rounded-lg border border-pink-300 md:col-span-2"
+            />
 
             <div className="md:col-span-2 flex gap-3 mt-4">
               <motion.button
@@ -168,6 +235,7 @@ const ProjectsManager = () => {
               >
                 {editingProject ? "Actualizar Proyecto" : "Agregar Proyecto"}
               </motion.button>
+
               <motion.button
                 whileHover={{ scale: 1.05, y: -3 }}
                 type="button"
@@ -177,6 +245,7 @@ const ProjectsManager = () => {
                 Cancelar
               </motion.button>
             </div>
+
           </form>
         </div>
       )}
@@ -194,13 +263,22 @@ const ProjectsManager = () => {
               <p className="font-bold text-pink-600 text-lg">{project.title}</p>
               <p className="text-sm text-gray-600">{project.category}</p>
               <p className="text-gray-500 text-xs mt-1">{project.description}</p>
+
               <p className="mt-1 text-gray-700 text-sm">
-                <strong>Equipo:</strong> {project.teamMembers.join(", ")}
+                <strong>Equipo:</strong> {project.teamMembers?.join(", ")}
               </p>
+
               <p className="mt-1 text-gray-700 text-sm">
                 <strong>Impacto:</strong> {project.impact}
               </p>
+
+              {project.group && (
+                <p className="mt-1 text-gray-600 text-sm">
+                  <strong>Grupo:</strong> {project.group}
+                </p>
+              )}
             </div>
+
             <div className="flex space-x-2 mt-3 md:mt-0">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -209,6 +287,7 @@ const ProjectsManager = () => {
               >
                 Editar
               </motion.button>
+
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 onClick={() => handleDelete(project.id)}

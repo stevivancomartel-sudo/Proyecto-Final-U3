@@ -111,7 +111,7 @@ const Layout = ({ children }) => {
       {/* Main Content */}
       <main className="flex-1 transition-colors duration-500">{children}</main>
 
-      {/* Footer */}
+ {/* Footer */}
       <footer className="bg-pink-500 text-white py-10 mt-12 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -126,10 +126,9 @@ const Layout = ({ children }) => {
                 </span>
               </div>
               <p className="text-pink-50 mb-3 text-sm leading-relaxed">
-                Somos Kitty Code, un grupo donde integramos el arte y la
-                computación creando diseños web únicos con estilo propio y
-                dinámico. Cada línea de código lleva un toque de creatividad y
-                corazón 💕.
+                En Kitty Code hacemos páginas web para empresas y emprendedoras que 
+                buscan algo bonito, moderno y profesional. Además, invitamos a chicas que aman la 
+                tecnología a unirse al equipo y crear proyectos reales con nosotras.💕.
               </p>
               <div className="flex space-x-4 text-lg">
                 <a href="#" className="hover:text-white/80 transition-colors">

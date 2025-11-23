@@ -37,15 +37,13 @@ const Home = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl lg:text-6xl font-bold mb-6 text-pink-800">
-                Construyendo el futuro con
+                Hagamos 
                 <span className="block text-pink-600">
-                  código y creatividad
+               magia digital 💖
                 </span>
               </h1>
               <p className="text-lg lg:text-xl mb-8 text-pink-700">
-                Somos <strong>Kitty Code</strong>, un grupo de chicas
-                programadoras apasionadas por crear soluciones tecnológicas con
-                estilo y corazón.
+                En  <strong>Kitty Code</strong> programamos con creatividad y cariño. Creamos webs para marcas y abrimos puertas a chicas que quieran aprender código.
               </p>
 
               {/* Hay dos botones con Link */}
@@ -140,10 +138,11 @@ const Home = () => {
       {/* Llamado a la acción */}
       <section className="py-16 bg-white text-center">
         <h2 className="text-3xl lg:text-4xl font-bold text-pink-700 mb-6">
-          ¿Lista para crear algo increíble?
+          ¿Te gustaría tener una web bonita y profesional?
         </h2>
         <p className="text-lg text-pink-500 mb-8">
-          Cuéntanos tu idea y hagamos realidad tu proyecto 💕
+          Nosotras la hacemos realidad 💗
+Y si eres una chica tech, ven y programa con nosotras
         </p>
         {/* Hay dos botones con Link */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

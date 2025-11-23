@@ -52,7 +52,7 @@ const Portfolio = () => {
         <h1 className="text-4xl font-bold mb-6">Portafolio de Kitty Code 💻</h1>
         <p className="text-xl max-w-2xl mx-auto">
           Estos son algunos de los proyectos realizados por nuestro equipo de
-          chicas programadoras: Besnaliz, Tatiana y Stefany 💕.
+          chicas programadoras: Besnaliz, Sofia, Xiomara y Stefany 💕.
         </p>
       </section>
 
